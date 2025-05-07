@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import com.bux.dto.ExpenseRequest;
 import com.bux.model.Expense;
 import com.bux.model.User;
-import com.bux.notification.NotificationService;
 import com.bux.repository.ExpenseRepository;
 import com.bux.service.ExpenseService;
 import com.bux.service.UserService;
@@ -21,17 +20,15 @@ import com.bux.service.UserService;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ExpenseController {
 
-    
     @Autowired
-    private UserService userService;   
-    @Autowired
-    private NotificationService notificationService;
+    private UserService userService;
+
     @Autowired
     private ExpenseService expenseService;
+
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    
     @PostMapping("/expenses")
     public ResponseEntity<Map<String, Object>> addExpense(@RequestBody ExpenseRequest req) {
         User u = userService.findById(req.userId)
@@ -49,29 +46,21 @@ public class ExpenseController {
 
         Expense saved = expenseService.save(e);
 
-        double total = expenseService.getAll().stream()
-            .mapToDouble(x -> x.getIsRefund() ? -x.getAmount() : x.getAmount())
-            .sum();
-        boolean emailSent = total > 500 &&
-            notificationService.sendBudgetExceededEmail("you@you.com", total, 500);
-
         Map<String,Object> resp = new HashMap<>();
         resp.put("expense", saved);
-        resp.put("emailSent", emailSent);
         return ResponseEntity.ok(resp);
     }
-
 
     @GetMapping("/expenses")
     public List<Expense> getAllExpenses() {
         return expenseService.getAllExpensesIncludingRecurring();
     }
-    
+
     @GetMapping("/expenses/category/{category}")
     public List<Expense> getExpensesByCategory(@PathVariable String category) {
         return expenseRepository.findByCategory(category);
     }
-    
+
     @PutMapping("/expenses/update/{id}")
     public Expense updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
         return expenseRepository.findById(id)
@@ -85,7 +74,7 @@ public class ExpenseController {
                 })
                 .orElseThrow(() -> new RuntimeException("Expense not found with id " + id));
     }
-    
+
     @PutMapping("/expenses/refund/{id}")
     public Expense markAsRefund(@PathVariable Long id) {
         return expenseRepository.findById(id)
@@ -95,7 +84,7 @@ public class ExpenseController {
                 })
                 .orElseThrow(() -> new RuntimeException("Expense not found with id " + id));
     }
-    
+
     @DeleteMapping("/expenses/delete/{id}")
     public String deleteExpense(@PathVariable Long id) {
         if (expenseRepository.existsById(id)) {
@@ -105,12 +94,13 @@ public class ExpenseController {
             throw new RuntimeException("Expense not found with id " + id);
         }
     }
-    
+
     @DeleteMapping("/expenses/reset")
     public String resetExpenses() {
         expenseRepository.deleteAll();
         return "All expenses have been reset successfully!";
     }
 }
+
 
 
