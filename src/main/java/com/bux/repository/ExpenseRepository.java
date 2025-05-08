@@ -13,6 +13,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     
     @Query("SELECT e FROM Expense e JOIN FETCH e.user")
     List<Expense> findAllWithUser();
+    List<Expense> findByUserId(Long userId);
+
   }
 
 

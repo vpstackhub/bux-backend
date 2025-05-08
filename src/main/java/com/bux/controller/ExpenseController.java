@@ -60,6 +60,12 @@ public class ExpenseController {
     public List<Expense> getExpensesByCategory(@PathVariable String category) {
         return expenseRepository.findByCategory(category);
     }
+    
+    @GetMapping("/expenses/user/{userId}")
+    public List<Expense> getExpensesByUserId(@PathVariable Long userId) {
+        return expenseRepository.findByUserId(userId);
+    }
+
 
     @PutMapping("/expenses/update/{id}")
     public Expense updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
