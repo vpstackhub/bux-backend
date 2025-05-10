@@ -60,12 +60,13 @@ public class ExpenseController {
     public List<Expense> getExpensesByCategory(@PathVariable String category) {
         return expenseRepository.findByCategory(category);
     }
-    
+
     @GetMapping("/expenses/user/{userId}")
     public List<Expense> getExpensesByUserId(@PathVariable Long userId) {
-        return expenseRepository.findByUserId(userId);
+        User user = userService.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return expenseRepository.findByUser(user);
     }
-
 
     @PutMapping("/expenses/update/{id}")
     public Expense updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
@@ -107,6 +108,7 @@ public class ExpenseController {
         return "All expenses have been reset successfully!";
     }
 }
+
 
 
 

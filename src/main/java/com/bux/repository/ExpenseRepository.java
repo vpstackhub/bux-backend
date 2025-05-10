@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.bux.model.Expense;
+import com.bux.model.User;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     
     @Query("SELECT e FROM Expense e JOIN FETCH e.user")
     List<Expense> findAllWithUser();
-    List<Expense> findByUserId(Long userId);
+    List<Expense> findByUser(User user);
 
   }
 
