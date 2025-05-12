@@ -1,9 +1,8 @@
-FROM jenkins/jenkins:lts
+# bux-backend/Dockerfile
+FROM eclipse-temurin:17-jdk-jammy
 
-USER root
+WORKDIR /app
 
-# Install Docker CLI
-RUN apt-get update && apt-get install -y docker.io
+COPY target/*.jar app.jar
 
-# Allow Jenkins to run docker
-RUN usermod -aG docker jenkins
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
