@@ -1,7 +1,10 @@
 package com.bux.service;
 
 import com.bux.model.Expense;
+import com.bux.model.User;
 import com.bux.repository.ExpenseRepository;
+import com.bux.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +16,13 @@ import java.util.List;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final UserRepository userRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
+        this.userRepository = userRepository;
     }
 
-    
     @Transactional(readOnly = true)
     public List<Expense> getAllExpensesIncludingRecurring() {
         List<Expense> all = expenseRepository.findAllWithUser();
@@ -35,11 +39,9 @@ public class ExpenseService {
                     recurring.setAmount(e.getAmount());
                     recurring.setCategory(e.getCategory());
                     recurring.setDescription(e.getDescription() + " (Recurring)");
-                    // Set date to first day of current month
                     recurring.setDate(LocalDate.of(now.getYear(), now.getMonthValue(), 1));
                     recurring.setIsRefund(false);
                     recurring.setIsRecurring(true);
-                    // Carry over the user reference
                     recurring.setUser(e.getUser());
                     virtualRecurring.add(recurring);
                 }
@@ -49,14 +51,19 @@ public class ExpenseService {
         return all;
     }
 
-    
     public Expense save(Expense expense) {
         return expenseRepository.save(expense);
     }
 
-    
     @Transactional(readOnly = true)
     public List<Expense> getAll() {
         return expenseRepository.findAllWithUser();
     }
+
+    public List<Expense> getExpensesByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return expenseRepository.findByUser(user);
+    }
 }
+
