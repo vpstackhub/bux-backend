@@ -42,13 +42,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-            "http://13.58.141.188:4201",
-            "http://localhost:4200"
-        ));
+        config.setAllowedOriginPatterns(List.of("http://localhost:4201", "http://13.58.141.188:4201"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization", "*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+        
+        System.out.println(" CORS configuration successfully applied");
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

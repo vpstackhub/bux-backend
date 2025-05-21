@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4201 ")
 public class UserController {
 
     @Autowired
@@ -45,6 +45,5 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
-
 }
 
