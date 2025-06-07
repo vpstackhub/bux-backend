@@ -46,13 +46,33 @@ public class UserService {
 
   
     public Optional<User> authenticate(String email, String rawPassword) {
-        return userRepository.findByEmail(email)
-            .filter(u -> passwordEncoder.matches(rawPassword, u.getPassword()));
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isPresent()) {
+            String encodedPassword = user.get().getPassword();
+            boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
+
+            System.out.println("🔍 Authenticating: " + email);
+            System.out.println("🔑 Raw password: " + rawPassword);
+            System.out.println("🔐 Stored hash: " + encodedPassword);
+            System.out.println("✅ Match result: " + matches);
+
+            if (matches) {
+                return user;
+            } else {
+                System.out.println("❌ Password mismatch");
+            }
+        } else {
+            System.out.println("❌ No user found with email: " + email);
+        }
+
+        return Optional.empty();
     }
+
     
     public List<User> getAllUsers() {  
         return userRepository.findAll();
-    }
+    } 
 }
 
 
