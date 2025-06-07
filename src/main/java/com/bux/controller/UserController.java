@@ -27,14 +27,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @CrossOrigin(origins = {"http://localhost:4201", "http://13.58.141.188:4201"})
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email    = credentials.get("email");    
         String password = credentials.get("password");
 
         Optional<User> user = userService.authenticate(email, password);
+
         if (user.isPresent()) {
+            System.out.println("✅ Login successful for " + email);
             return ResponseEntity.ok(user.get());
         } else {
+            System.out.println("❌ Login failed for " + email);
             return ResponseEntity
                      .status(HttpStatus.UNAUTHORIZED)
                      .body(Map.of("error", "Invalid email or password"));
