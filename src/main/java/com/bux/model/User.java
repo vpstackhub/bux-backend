@@ -3,6 +3,8 @@ package com.bux.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,8 +21,9 @@ public class User {
 
   @Column(nullable = false)
   private String password;
-
+  
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
   private List<Expense> expenses;
   
   public String getUsername() {
