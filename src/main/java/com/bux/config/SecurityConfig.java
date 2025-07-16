@@ -29,30 +29,34 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
+            .httpBasic(Customizer.withDefaults()) // ✅ Add this line
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/users/register", "/api/users/login", "/api/users/**").permitAll()
+                .requestMatchers(
+                    "/api/users/register",
+                    "/api/users/login",
+                    "/api/users",
+                    "/api/users/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             );
 
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:4201", "http://13.58.141.188:4201"));
-        config.setAllowedHeaders(List.of("Content-Type", "Authorization", "*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedOriginPatterns(List.of("*")); // for now allow all origins
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowCredentials(true);
-        
-        System.out.println(" CORS configuration successfully applied");
-
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
+        System.out.println("✅ CORS configuration applied from SecurityConfig");
+
         return source;
     }
 
@@ -68,6 +72,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
-
 
